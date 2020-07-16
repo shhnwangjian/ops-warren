@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	balanceTest() // 负责算法测试
+	balanceTest() // 负载算法测试（全部）
 }
 
 func balanceTest() {

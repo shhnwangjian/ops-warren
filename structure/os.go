@@ -24,25 +24,26 @@ type SysData struct {
 }
 
 type Basic struct {
-	Attribute      string `json:"attribute"`
-	Os_release     string `json:"os_release"`
-	Os_name        string `json:"os_name"`
-	Os_version     string `json:"os_version"`
-	Os_units       string `json:"os_units"`
-	Manufacturer   string `json:"manufacturer"`
-	Model          string `json:"model"`
-	Os_kernel      string `json:"os_kernel"`
-	Os_sn          string `json:"os_sn"`
-	Sn             string `json:"sn"`
-	Ram_slot_total int    `json:"ram_slot_total"`
-	Ram_slot_used  int    `json:"ram_slot_used"`
-	Max_mem_size   uint32 `json:"max_mem_size"`
-	Uptime         string `json:"uptime"`
-	Language       string `json:"language"`
-	LocalTime      string `json:"local_time"`
-	Ipmi           string `json:"ipmi"`
-	IpmiMac        string `json:"IpmiMac"`
-	BiosVersion    string `json:"BiosVersion"`
+	Attribute          string `json:"attribute"`
+	Os_release         string `json:"os_release"`
+	Os_name            string `json:"os_name"`
+	Os_version         string `json:"os_version"`
+	Os_units           string `json:"os_units"`
+	Manufacturer       string `json:"manufacturer"`
+	Model              string `json:"model"`
+	Os_kernel          string `json:"os_kernel"`
+	Os_sn              string `json:"os_sn"`
+	Sn                 string `json:"sn"`
+	Ram_slot_total     int    `json:"ram_slot_total"`
+	Ram_slot_used      int    `json:"ram_slot_used"`
+	Max_mem_size       uint32 `json:"max_mem_size"`
+	Uptime             string `json:"uptime"`
+	Language           string `json:"language"`
+	LocalTime          string `json:"local_time"`
+	Ipmi               string `json:"ipmi"`
+	IpmiMac            string `json:"IpmiMac"`
+	BiosVersion        string `json:"BiosVersion"`
+	CpuScalingGovernor string `json:"CpuScalingGovernor"`
 }
 
 type Cpu struct {
