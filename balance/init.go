@@ -28,6 +28,10 @@ func (i *Instance) GetHost() string {
 	return i.Ip
 }
 
+func (i *Instance) GetAddr() string {
+	return fmt.Sprintf("%s:%d", i.Ip, i.Port)
+}
+
 func (i *Instance) GetCallTimes() int64 {
 	return i.CallNums
 }

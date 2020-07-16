@@ -8,7 +8,32 @@ import (
 )
 
 func main() {
-	balanceTest() // 负载算法测试（全部）
+	//balanceTest()    // 负载算法测试（全部）
+	roundRobinTest() // 轮询调度算法
+}
+
+func roundRobinTest() {
+	fmt.Println("START-----------------------------------")
+	var instanceList []*balance.Instance
+	for i := 0; i < 5; i++ {
+		host := fmt.Sprintf("10.10.%d.%d", rand.Intn(255), i)
+		w := rand.Intn(10)
+		fmt.Println(host, w)
+		one := balance.NewInstance(host, 8080, int64(w))
+		instanceList = append(instanceList, one)
+	}
+	fmt.Println("-----------------------------------")
+	for i := 0; i < 10000; i++ {
+		_, err := balance.DoBalance("roundrobin", instanceList)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+	fmt.Println("-----------------------------------")
+	for _, inst := range instanceList {
+		fmt.Println(inst.GetResult())
+	}
 }
 
 func balanceTest() {

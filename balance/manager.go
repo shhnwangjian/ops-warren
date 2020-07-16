@@ -1,9 +1,11 @@
 package balance
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var (
-	mgr = BalancerManager{
+	balanceMgr = BalancerManager{
 		allBalance: make(map[string]Balancer),
 	}
 )
@@ -23,11 +25,11 @@ func (p *BalancerManager) register(balanceType string, b Balancer) {
 }
 
 func RegisterBalancer(balanceType string, b Balancer) {
-	mgr.register(balanceType, b)
+	balanceMgr.register(balanceType, b)
 }
 
 func DoBalance(balanceType string, instanceList []*Instance) (*Instance, error) {
-	Balancer, ok := mgr.allBalance[balanceType]
+	Balancer, ok := balanceMgr.allBalance[balanceType]
 	if !ok {
 		return nil, fmt.Errorf("not found %s balancer", balanceType)
 	}
