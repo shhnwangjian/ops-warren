@@ -37,5 +37,5 @@ func (i *Instance) GetCallTimes() int64 {
 }
 
 func (i *Instance) GetResult() string {
-	return fmt.Sprintf("%s:%d;call times:%d", i.Ip, i.Port, i.CallNums)
+	return fmt.Sprintf("%s:%d;call nums:%d", i.Ip, i.Port, i.CallNums)
 }
