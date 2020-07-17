@@ -1,10 +1,13 @@
 package lib
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
+	"strconv"
+	"strings"
 )
 
 // CopyFile 覆盖文件
@@ -54,4 +57,41 @@ func GetOneWalk(path string) (files []string, dirs []string, err error) {
 		}
 	}
 	return
+}
+
+func Read(path string) string {
+	fi, err := os.Open(path)
+	if err != nil {
+		return ""
+	}
+	defer fi.Close()
+
+	fd, err := ioutil.ReadAll(fi)
+	if err != nil {
+		return ""
+	}
+	return string(fd)
+}
+
+func GetUidGid(user string) (uid, gid int, err error) {
+	con := strings.TrimSpace(Read(HostEtc("passwd")))
+	conList := strings.Split(con, "\n")
+	if len(conList) == 0 {
+		return -1, -1, errors.New("user no exist")
+	}
+	for _, v := range conList {
+		if !strings.EqualFold(user, strings.Split(v, ":")[0]) {
+			continue
+		}
+		uid, err := strconv.Atoi(strings.Split(v, ":")[2])
+		if err != nil {
+			return -1, -1, err
+		}
+		gid, err := strconv.Atoi(strings.Split(v, ":")[3])
+		if err != nil {
+			return -1, -1, err
+		}
+		return uid, gid, nil
+	}
+	return -1, -1, errors.New("user no exist")
 }

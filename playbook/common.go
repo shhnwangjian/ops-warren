@@ -1,11 +1,12 @@
 package playbook
 
 type PlayBook interface {
-	HandlerAll() error
-	HandlerOne(fb FileBook)
+	Do(string) error
 }
 
-var PlayInfo = make(map[string]PlayBook)
+var (
+	PlayInfo = make(map[string]PlayBook)
+)
 
 func Register(name string, collect PlayBook) {
 	if collect == nil {
