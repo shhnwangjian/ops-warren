@@ -95,3 +95,26 @@ func GetUidGid(user string) (uid, gid int, err error) {
 	}
 	return -1, -1, errors.New("user no exist")
 }
+
+func GetChmodPermissions(s string) int {
+	switch s {
+	case "---": // No permission
+		return 0
+	case "--x": // Execute permission
+		return 1
+	case "-w-": // Write permission
+		return 2
+	case "-wx": // Execute and write permission: 1 (execute) + 2 (write) = 3
+		return 3
+	case "r--": // Read permission
+		return 4
+	case "r-x": // Read and execute permission: 4 (read) + 1 (execute) = 5
+		return 5
+	case "rw-": // Read and write permission: 4 (read) + 2 (write) = 6
+		return 6
+	case "rwx": // All permissions: 4 (read) + 2 (write) + 1 (execute) = 7
+		return 7
+	default:
+		return -1
+	}
+}
