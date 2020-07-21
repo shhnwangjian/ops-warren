@@ -3,13 +3,14 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"ops-warren/balance"
 	"time"
+
+	"github.com/shhnwangjian/ops-warren/balance"
 )
 
 func main() {
-	//balanceTest()    // 负载算法测试（全部）
-	roundRobinTest() // 轮询调度算法
+	balanceTest() // 负载算法测试（全部）
+	//roundRobinTest() // 轮询调度算法
 }
 
 func roundRobinTest() {

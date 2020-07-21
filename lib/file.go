@@ -96,6 +96,7 @@ func GetUidGid(user string) (uid, gid int, err error) {
 	return -1, -1, errors.New("user no exist")
 }
 
+// http://www.filepermissions.com/file-permissions-index
 func GetChmodPermissions(s string) int {
 	switch s {
 	case "---": // No permission
@@ -115,6 +116,6 @@ func GetChmodPermissions(s string) int {
 	case "rwx": // All permissions: 4 (read) + 2 (write) + 1 (execute) = 7
 		return 7
 	default:
-		return -1
+		return 4
 	}
 }
