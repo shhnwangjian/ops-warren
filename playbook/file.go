@@ -71,7 +71,7 @@ type FileOp struct {
 	Path  string `yaml:"path"`
 }
 
-func readYamlConfig(s string) ([]*FileBook, error) {
+func (f *FileInfo) readYamlConfigList(s string) ([]*FileBook, error) {
 	conf := make([]*FileBook, 0)
 	err := yaml.Unmarshal([]byte(s), &conf)
 	if err != nil {
@@ -80,48 +80,86 @@ func readYamlConfig(s string) ([]*FileBook, error) {
 	return conf, nil
 }
 
-func parse(s string) ([]*FileBook, error) {
-	return readYamlConfig(s)
+func (f *FileInfo) parseList(s string) ([]*FileBook, error) {
+	return f.readYamlConfigList(s)
 }
 
-func Parse(s string) ([]*FileBook, error) {
-	return parse(s)
+func (f *FileInfo) readYamlConfig(s string) (*FileBook, error) {
+	conf := &FileBook{}
+	err := yaml.Unmarshal([]byte(s), conf)
+	if err != nil {
+		return nil, err
+	}
+	return conf, nil
 }
 
-func (f *FileInfo) Res(ind int, r ResPlayBook) {
-	f.Msg = append(f.Msg, fmt.Sprintf("执行步骤%d(%s),执行模块:%s,执行结果:%s,%s\n", ind+1, r.Name, r.Model, getStatus(r.Status), r.Msg))
+func (f *FileInfo) parse(s string) (*FileBook, error) {
+	return f.readYamlConfig(s)
 }
 
-func (f *FileInfo) Do(s string) error {
-	l, err := Parse(s)
-	if err != err {
-		return err
+func (f *FileInfo) Res(r ResPlayBook) {
+	f.Msg = append(f.Msg, fmt.Sprintf("执行步骤名称:%s,执行模块:%s,执行结果:%s,%s\n", r.Name, r.Model, getStatus(r.Status), r.Msg))
+}
+
+func (f *FileInfo) DoOne(s string) {
+	r := ResPlayBook{
+		Model: "file",
+	}
+	l, err := f.parse(s)
+	defer f.Res(r)
+	if err != nil {
+		r.Status = -1
+		r.Msg = err.Error()
+		return
+	}
+	err = l.Op.StateExec()
+	if err != nil {
+		r.Status = -1
+		r.Msg = err.Error()
+		return
+	}
+	err = l.Op.mode()
+	if err != nil {
+		r.Status = -1
+		r.Msg = err.Error()
+	}
+}
+
+func (f *FileInfo) DoAll(s string) {
+	r := ResPlayBook{
+		Model: "file",
+	}
+	l, err := f.parseList(s)
+	if err != nil {
+		r.Status = -1
+		r.Msg = err.Error()
+		f.Res(r)
+		return
 	}
 	if len(l) == 0 {
-		return errors.New("file book no data")
+		r.Status = -1
+		r.Msg = "file book no data"
+		f.Res(r)
+		return
 	}
-	for ind, line := range l {
-		r := ResPlayBook{
-			Name:  line.Name,
-			Model: "file",
-		}
+	for _, line := range l {
+		r.Name = line.Name
 		err := line.Op.StateExec()
 		if err != nil {
 			r.Status = -1
 			r.Msg = err.Error()
-			f.Res(ind, r)
+			f.Res(r)
 			continue
 		}
 		err = line.Op.mode()
 		if err != nil {
 			r.Status = -1
 			r.Msg = err.Error()
-			f.Res(ind, r)
+			f.Res(r)
 			continue
 		}
-		f.Res(ind, r)
+		f.Res(r)
 	}
-	return nil
 }
 
 // Path to the file being managed.  aliases: dest, name
@@ -162,8 +200,8 @@ func (f *FileOp) StateExec() error {
 }
 
 // isOp 检测操作key的值是否存在
-func (f FileOp) isOp(s FileState) bool {
-	ref := reflect.ValueOf(f)
+func (f *FileOp) isOp(s FileState) bool {
+	ref := reflect.ValueOf(*f)
 	k, b := ref.Type().FieldByName(s.String())
 	if !b {
 		return false
@@ -216,11 +254,11 @@ func (f *FileOp) isChown() bool {
 }
 
 func (f *FileOp) chown() error {
-	uid, gid, err := lib.GetUidGid(f.Owner)
+	uid, gid, err := lib.GetUidGid(f.Owner, f.Group)
 	if err != nil {
 		return err
 	}
-	return os.Chown(f.Src, uid, gid)
+	return os.Chown(f.Src, int(uid), int(gid))
 }
 
 func (f *FileOp) touch() error {
@@ -356,124 +394,6 @@ func (f *FileOp) getFileMode() error {
 		return err
 	}
 	return nil
-}
-
-func getNewMode(s string) string {
-	var res string
-	if strings.Contains(s, "r") {
-		res = "r"
-	} else {
-		res = "-"
-	}
-	if strings.Contains(s, "w") {
-		res += "w"
-	} else {
-		res += "-"
-	}
-	if strings.Contains(s, "w") {
-		res += "x"
-	} else {
-		res += "-"
-	}
-	return res
-}
-
-func getModifyMode(s, old string) string {
-	var res string
-	if strings.Contains(s, "r") {
-		res = "-"
-	} else {
-		res = old[:1]
-	}
-	if strings.Contains(s, "w") {
-		res += "-"
-	} else {
-		res += old[1:2]
-	}
-	if strings.Contains(s, "x") {
-		res += "-"
-	} else {
-		res += old[2:3]
-	}
-	return res
-}
-
-func getAddMode(s, old string) string {
-	var res string
-	if strings.Contains(s, "r") {
-		res = "r"
-	} else {
-		res = old[:1]
-	}
-	if strings.Contains(s, "w") {
-		res += "w"
-	} else {
-		res += old[1:2]
-	}
-	if strings.Contains(s, "x") {
-		res += "x"
-	} else {
-		res += old[2:3]
-	}
-	return res
-}
-
-func getFileMode(str, fileModeStr string) (string, string, error) {
-	if strings.Contains(str, "=") {
-		strList := strings.Split(str, "=")
-		if len(strList) != 2 {
-			return "", "", errors.New("file mode content error")
-		}
-		res := getNewMode(strList[1])
-		return strList[0], res, nil
-	}
-	if strings.Contains(str, "-") {
-		strList := strings.Split(str, "-")
-		if len(strList) != 2 {
-			return "", "", errors.New("file mode content error")
-		}
-		if strList[0] == "u" {
-			res := getModifyMode(strList[1], fileModeStr[1:4])
-			return strList[0], res, nil
-		}
-		if strList[0] == "g" {
-			res := getModifyMode(strList[1], fileModeStr[4:7])
-			return strList[0], res, nil
-		}
-		if strList[0] == "o" {
-			res := getModifyMode(strList[1], fileModeStr[7:10])
-			return strList[0], res, nil
-		}
-	}
-	if strings.Contains(str, "+") {
-		strList := strings.Split(str, "+")
-		if len(strList) != 2 {
-			return "", "", errors.New("file mode content error")
-		}
-		if strList[0] == "u" {
-			res := getAddMode(strList[1], fileModeStr[1:4])
-			return strList[0], res, nil
-		}
-		if strList[0] == "g" {
-			res := getAddMode(strList[1], fileModeStr[4:7])
-			return strList[0], res, nil
-		}
-		if strList[0] == "x" {
-			res := getAddMode(strList[1], fileModeStr[7:10])
-			return strList[0], res, nil
-		}
-	}
-	return "", "", errors.New("file mode content error")
-}
-
-func checkStr(name, list string) bool {
-	nameList := strings.Split(name, "")
-	for _, val := range nameList {
-		if !strings.Contains(list, val) {
-			return false
-		}
-	}
-	return true
 }
 
 func init() {

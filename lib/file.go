@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/user"
 	"strconv"
 	"strings"
 )
@@ -73,7 +74,33 @@ func Read(path string) string {
 	return string(fd)
 }
 
-func GetUidGid(user string) (uid, gid int, err error) {
+func GetUidGid(userName, groupName string) (uid, gid uint64, err error) {
+	u, err := user.Lookup(userName)
+	if err != nil {
+		return 0, 0, err
+	}
+	uid, err = strconv.ParseUint(u.Uid, 10, 32)
+	if err != nil {
+		return 0, 0, err
+	}
+	gid, err = strconv.ParseUint(u.Gid, 10, 32)
+	if err != nil && groupName == "" {
+		return 0, 0, err
+	}
+	if groupName != "" {
+		g, err := user.LookupGroup(groupName)
+		if err != nil {
+			return 0, 0, err
+		}
+		gid, err = strconv.ParseUint(g.Gid, 10, 32)
+		if err != nil {
+			return 0, 0, err
+		}
+	}
+	return uid, gid, err
+}
+
+func GetEtcPasswdUidGid(user string) (uid, gid int, err error) {
 	con := strings.TrimSpace(Read(HostEtc("passwd")))
 	conList := strings.Split(con, "\n")
 	if len(conList) == 0 {

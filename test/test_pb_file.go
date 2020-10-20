@@ -16,19 +16,25 @@ var t string = `
 
 - name: test2
   file:
-    path: /Users/wangjian/go/src/github.com/shhnwangjian/ops-warren/test2.txt
-    src: /Users/wangjian/go/src/github.com/shhnwangjian/ops-warren/test.txt
-    state: hard
+    path: /Users/wangjian/go/src/github.com/shhnwangjian/ops-warren/test.txt
+    state: touch
 
 - name: test3
   file:
-    path: /Users/wangjian/go/src/github.com/shhnwangjian/ops-warren/test.txt
-    state: touch
+    path: /Users/wangjian/go/src/github.com/shhnwangjian/ops-warren/test2.txt
+    src: /Users/wangjian/go/src/github.com/shhnwangjian/ops-warren/test.txt
+    state: hard
 
 - name: test4
   file:
     path: /Users/wangjian/go/src/github.com/shhnwangjian/ops-warren/test.txt
     state: absent
+
+- name: test5
+  file:
+    path: /Users/wangjian/go/src/github.com/shhnwangjian/ops-warren/test2.txt
+    state: absent
+
 `
 
 func main() {
@@ -37,7 +43,6 @@ func main() {
 
 func PlaybookFileTest() {
 	f := playbook.FileInfo{}
-	err := f.Do(t)
-	fmt.Println(err)
+	f.DoOne(t)
 	fmt.Println(f.Msg)
 }

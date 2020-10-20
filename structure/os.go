@@ -44,6 +44,7 @@ type Basic struct {
 	IpmiMac            string `json:"IpmiMac"`
 	BiosVersion        string `json:"BiosVersion"`
 	CpuScalingGovernor string `json:"CpuScalingGovernor"`
+	Uuid               string `json:"Uuid"`
 }
 
 type Cpu struct {
