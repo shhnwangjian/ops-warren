@@ -183,7 +183,7 @@ type Statistics struct {
 
 // SetIPAddr sets the ip address of the target host.
 func (p *PingProbe) SetIPAddr(ipaddr *net.IPAddr) {
-	p.isIpv4 = isIPv4(ipaddr.IP)
+	p.isIpv4 = isIP4(ipaddr.IP)
 	p.ipaddr = ipaddr
 	p.addr = ipaddr.String()
 }
@@ -202,7 +202,7 @@ func (p *PingProbe) Resolve() error {
 	if err != nil {
 		return err
 	}
-	p.isIpv4 = isIPv4(ipaddr.IP)
+	p.isIpv4 = isIP4(ipaddr.IP)
 	p.ipaddr = ipaddr
 	return nil
 }
@@ -590,7 +590,7 @@ func bytesToTime(b []byte) time.Time {
 	return time.Unix(nSec/1000000000, nSec%1000000000)
 }
 
-func isIPv4(ip net.IP) bool {
+func isIP4(ip net.IP) bool {
 	return len(ip.To4()) == net.IPv4len
 }
 
