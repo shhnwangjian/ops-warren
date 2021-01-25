@@ -1,0 +1,18 @@
+# github.com/digitalocean/go-smbios v0.0.0-20180907143718-390a4f403a8e
+## explicit
+github.com/digitalocean/go-smbios/smbios
+# golang.org/x/net v0.0.0-20210119194325-5f4716e94777
+## explicit
+golang.org/x/net/bpf
+golang.org/x/net/icmp
+golang.org/x/net/internal/iana
+golang.org/x/net/internal/socket
+golang.org/x/net/ipv4
+golang.org/x/net/ipv6
+# golang.org/x/sys v0.0.0-20201119102817-f84b799fce68
+golang.org/x/sys/internal/unsafeheader
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+## explicit
+gopkg.in/yaml.v3

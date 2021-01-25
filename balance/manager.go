@@ -29,9 +29,9 @@ func RegisterBalancer(balanceType string, b Balancer) {
 }
 
 func DoBalance(balanceType string, instanceList []*Instance) (*Instance, error) {
-	Balancer, ok := balanceMgr.allBalance[balanceType]
+	balancer, ok := balanceMgr.allBalance[balanceType]
 	if !ok {
 		return nil, fmt.Errorf("not found %s balancer", balanceType)
 	}
-	return Balancer.DoBalance(instanceList)
+	return balancer.DoBalance(instanceList)
 }
