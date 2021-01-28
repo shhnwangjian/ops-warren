@@ -28,8 +28,8 @@ type socketEntry struct {
 	inode         string
 }
 
-// socketAll
-func socketAll() (s []*socketEntry) {
+// SocketAll
+func SocketAll() (s []*socketEntry) {
 	s = append(s, addSocket("tcp", linux.NetTcpFile())...)
 	s = append(s, addSocket("tcp6", linux.NetTcp6File())...)
 	s = append(s, addSocket("udp", linux.NetUdpFile())...)
