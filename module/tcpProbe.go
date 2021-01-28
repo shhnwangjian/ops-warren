@@ -3,6 +3,7 @@ package module
 import (
 	"net"
 	"strconv"
+	"sync/atomic"
 	"time"
 )
 
@@ -10,10 +11,11 @@ import (
 type ProbeCommon interface {
 	Probe() (bool, error)
 	RetryProbe() (bool, error)
+	SetRetry(int32)
 }
 
 type tcpProbe struct {
-	retry   int
+	retry   *int32
 	host    string
 	port    int
 	timeout time.Duration
@@ -24,7 +26,7 @@ func NewTcpProbe(host string, port int, timeout time.Duration) ProbeCommon {
 		host:    host,
 		port:    port,
 		timeout: timeout,
-		retry:   3,
+		retry:   new(int32),
 	}
 }
 
@@ -46,7 +48,8 @@ func (p tcpProbe) Probe() (bool, error) {
 }
 
 func (p tcpProbe) RetryProbe() (status bool, err error) {
-	for num := 0; num <= p.retry; num++ {
+	var num int32
+	for num = 0; num <= *p.retry; num++ {
 		status, err = p.Probe()
 		if status {
 			return status, nil
@@ -59,6 +62,6 @@ func (p tcpProbe) RetryProbe() (status bool, err error) {
 	return false, err
 }
 
-func (p tcpProbe) SetRetry(num int) {
-	p.retry = num
+func (p tcpProbe) SetRetry(num int32) {
+	atomic.StoreInt32(p.retry, num)
 }
