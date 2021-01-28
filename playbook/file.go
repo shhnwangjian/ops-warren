@@ -15,10 +15,10 @@ import (
 
 // https://docs.ansible.com/ansible/latest/modules/file_module.html#examples
 
-type FileState int
+type fileState int
 
 const (
-	Src FileState = iota
+	Src fileState = iota
 	Dest
 	Owner
 	Group
@@ -28,7 +28,7 @@ const (
 	Name
 )
 
-func (p FileState) String() string {
+func (p fileState) String() string {
 	switch p {
 	case Src:
 		return "Src"
@@ -200,7 +200,7 @@ func (f *FileOp) StateExec() error {
 }
 
 // isOp 检测操作key的值是否存在
-func (f *FileOp) isOp(s FileState) bool {
+func (f *FileOp) isOp(s fileState) bool {
 	ref := reflect.ValueOf(*f)
 	k, b := ref.Type().FieldByName(s.String())
 	if !b {

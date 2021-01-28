@@ -56,7 +56,7 @@ func YamlToJsonEncode(buf *bytes.Buffer, v reflect.Value) error {
 	return nil
 }
 
-// 三元表达式
+// If 三元表达式
 func If(condition bool, trueVal, falseVal interface{}) interface{} {
 	if condition {
 		return trueVal

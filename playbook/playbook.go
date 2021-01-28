@@ -5,7 +5,9 @@ import (
 )
 
 func Run(t string) (error, []string) {
-	var res []string
+	var (
+		res []string
+	)
 	m := make([]map[string]interface{}, 0)
 	err := yaml.Unmarshal([]byte(t), &m)
 	if err != nil {
