@@ -101,7 +101,9 @@ func parseSocketEntry(proto, entry string) (sockets []*socketEntry, err error) {
 				}
 				se.remotePort = int(port)
 			case 3:
-				se.state = linux.TcpConnectionStateTransform(lineList[i])
+				if se.proto == "tcp" || se.proto == "tcp6" {
+					se.state = linux.TcpConnectionStateTransform(lineList[i])
+				}
 			case 4:
 				queueList := strings.Split(lineList[i], ":")
 				if len(queueList) != 2 {
