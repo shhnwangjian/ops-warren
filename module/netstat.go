@@ -3,6 +3,7 @@ package module
 import (
 	"bufio"
 	"io/ioutil"
+	"os/user"
 	"strconv"
 	"strings"
 	"time"
@@ -12,7 +13,7 @@ import (
 
 type socketEntry struct {
 	proto         string // 协议
-	id            int64  // 唯一ID
+	id            int64  // sl
 	localIP       string // 源地址
 	localPort     int    // 源端口
 	remoteIP      string // 目标地址
@@ -23,7 +24,7 @@ type socketEntry struct {
 	timerActive   int8
 	timerDuration time.Duration
 	rto           time.Duration
-	uid           int
+	uid           string
 	uname         string
 	inode         string
 }
@@ -119,8 +120,16 @@ func parseSocketEntry(proto, entry string) (sockets []*socketEntry, err error) {
 				}
 				se.transmitQueue, _ = strconv.ParseInt(queueList[0], 16, 64)
 				se.receiveQueue, _ = strconv.ParseInt(queueList[1], 16, 64)
-			case 5:
-
+			case 7:
+				u, err := strconv.ParseInt(lineList[7], 10, 64)
+				if err != nil {
+					continue
+				}
+				au, err := user.LookupId(strconv.Itoa(int(u)))
+				if err != nil {
+					continue
+				}
+				se.uid = au.Username
 			default:
 				continue
 			}
