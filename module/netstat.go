@@ -2,6 +2,7 @@ package module
 
 import (
 	"bufio"
+	"fmt"
 	"io/ioutil"
 	"os/user"
 	"strconv"
@@ -24,9 +25,13 @@ type socketEntry struct {
 	timerActive   int8
 	timerDuration time.Duration
 	rto           time.Duration
-	uid           string
-	uname         string
-	inode         string
+	uname         string // 用户
+	inode         int64
+}
+
+func (s *socketEntry) string() string {
+	return fmt.Sprintf("%s:%d	%s:%d	%s	%s	%d",
+		s.localIP, s.localPort, s.remoteIP, s.remotePort, s.state, s.uname, s.inode)
 }
 
 // SocketAll
@@ -129,7 +134,13 @@ func parseSocketEntry(proto, entry string) (sockets []*socketEntry, err error) {
 				if err != nil {
 					continue
 				}
-				se.uid = au.Username
+				se.uname = au.Username
+			case 9:
+				inode, err := strconv.ParseInt(lineList[9], 10, 64)
+				if err != nil {
+					continue
+				}
+				se.inode = inode
 			default:
 				continue
 			}
