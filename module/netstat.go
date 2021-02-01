@@ -11,13 +11,13 @@ import (
 )
 
 type socketEntry struct {
-	proto         string
-	id            int64
-	localIP       string
-	localPort     int
-	remoteIP      string
-	remotePort    int
-	state         string
+	proto         string // 协议
+	id            int64  // 唯一ID
+	localIP       string // 源地址
+	localPort     int    // 源端口
+	remoteIP      string // 目标地址
+	remotePort    int    // 目标端口
+	state         string // 状态
 	transmitQueue int64
 	receiveQueue  int64
 	timerActive   int8
@@ -83,7 +83,11 @@ func parseSocketEntry(proto, entry string) (sockets []*socketEntry, err error) {
 				if len(ipPort) != 2 {
 					continue
 				}
-				se.localIP = linux.TcpParseIPV4One(ipPort[0])
+				if strings.HasSuffix(proto, "6") {
+					se.localIP, _ = linux.ParseIPv6(ipPort[0])
+				} else {
+					se.localIP = linux.ParseIPV4One(ipPort[0])
+				}
 				port, err := strconv.ParseInt(ipPort[1], 16, 64)
 				if err != nil {
 					continue
@@ -94,7 +98,11 @@ func parseSocketEntry(proto, entry string) (sockets []*socketEntry, err error) {
 				if len(ipPort) != 2 {
 					continue
 				}
-				se.remoteIP = linux.TcpParseIPV4One(ipPort[0])
+				if strings.HasSuffix(proto, "6") {
+					se.remoteIP, _ = linux.ParseIPv6(ipPort[0])
+				} else {
+					se.remoteIP = linux.ParseIPV4One(ipPort[0])
+				}
 				port, err := strconv.ParseInt(ipPort[1], 16, 64)
 				if err != nil {
 					continue

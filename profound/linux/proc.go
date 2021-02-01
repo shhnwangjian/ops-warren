@@ -1,6 +1,7 @@
 package linux
 
 import (
+	"encoding/binary"
 	"fmt"
 	"net"
 	"path/filepath"
@@ -25,9 +26,9 @@ func tcpSocketINode(fdPath string) (iNode string) {
 	return
 }
 
-// tcpParseIPV4One 转化ip方法1
+// ParseIPV4One 转化ip方法1
 // sample 3301700A 16进制的字符串
-func TcpParseIPV4One(hexIP string) string {
+func ParseIPV4One(hexIP string) string {
 	ip1, _ := strconv.ParseUint(strings.TrimSpace(hexIP[6:]), 16, 64)
 	ip2, _ := strconv.ParseUint(strings.TrimSpace(hexIP[4:6]), 16, 64)
 	ip3, _ := strconv.ParseUint(strings.TrimSpace(hexIP[2:4]), 16, 64)
@@ -35,9 +36,27 @@ func TcpParseIPV4One(hexIP string) string {
 	return fmt.Sprintf("%d.%d.%d.%d", ip1, ip2, ip3, ip4)
 }
 
-//  tcpParseIPV4Two 转化ip方法2
+// ParseIPv6W
+func ParseIPv6(s string) (string, error) {
+	ip := make(net.IP, net.IPv6len)
+	const grpLen = 4
+	i, j := 0, 4
+	for len(s) != 0 {
+		grp := s[0:8]
+		u, err := strconv.ParseUint(grp, 16, 32)
+		binary.LittleEndian.PutUint32(ip[i:j], uint32(u))
+		if err != nil {
+			return "", err
+		}
+		i, j = i+grpLen, j+grpLen
+		s = s[8:]
+	}
+	return ip.String(), nil
+}
+
+//  ParseIPV4Two 转化ip方法2
 // sample 3301700A 16进制的字符串
-func TcpParseIPV4Two(hexIP string) net.IP {
+func ParseIPV4Two(hexIP string) net.IP {
 	b := []byte(hexIP)
 	for i, j := 1, len(b)-2; i < j; i, j = i+2, j-2 { // 反转字节，转换成小端法
 		b[i], b[i-1], b[j], b[j+1] = b[j+1], b[j], b[i-1], b[i]
