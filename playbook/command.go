@@ -16,8 +16,8 @@ import (
 
 type Command struct {
 	cmd       *exec.Cmd
-	bufOut    *bytes.Buffer
-	bufErr    *bytes.Buffer
+	bufOut    bytes.Buffer
+	bufErr    bytes.Buffer
 	startTime time.Time
 	stopTime  time.Time
 	lock      sync.RWMutex
@@ -32,8 +32,6 @@ type Command struct {
 func NewCommand() *Command {
 	return &Command{
 		cmd:       nil,
-		bufOut:    nil,
-		bufErr:    nil,
 		startTime: time.Unix(0, 0),
 		stopTime:  time.Unix(0, 0),
 		env:       make([]string, 0),
@@ -121,11 +119,11 @@ func (p *Command) setUser() error {
 }
 
 func (p *Command) setStdout() {
-	p.cmd.Stdout = p.bufOut
+	p.cmd.Stdout = &p.bufOut
 }
 
 func (p *Command) setStderr() {
-	p.cmd.Stderr = p.bufErr
+	p.cmd.Stderr = &p.bufErr
 }
 
 func (p *Command) GetStdout() string {

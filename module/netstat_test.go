@@ -7,5 +7,7 @@ import (
 
 func TestSocketAll(t *testing.T) {
 	s := SocketAll()
-	fmt.Println(s)
+	for _, line := range s {
+		fmt.Println(line.string())
+	}
 }

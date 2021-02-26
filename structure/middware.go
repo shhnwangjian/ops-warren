@@ -80,3 +80,9 @@ type MongodOpensslData struct {
 	Running  string `json:"running"`
 	Compiled string `json:"compiled"`
 }
+
+type HaproxyData struct {
+	Version string `json:"Version"`
+	Build   string `json:"Build"`
+	Config  string `json:"Config"`
+}
