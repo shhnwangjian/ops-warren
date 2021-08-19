@@ -13,6 +13,7 @@ func Run(t string) (error, []string) {
 	if err != nil {
 		return err, res
 	}
+
 	for _, line := range m {
 		for k, _ := range line {
 			b, err := yaml.Marshal(line)

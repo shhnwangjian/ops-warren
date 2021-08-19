@@ -39,7 +39,7 @@ func getStatus(i int8) string {
 	case -1:
 		return "fail"
 	default:
-		return "Unknown"
+		return "unknown"
 	}
 }
 

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/shhnwangjian/ops-warren/profound/linux"
+	"github.com/shhnwangjian/ops-warren/profound/linux/proc"
 )
 
 type socketEntry struct {
@@ -36,10 +36,10 @@ func (s *socketEntry) string() string {
 
 // SocketAll
 func SocketAll() (s []*socketEntry) {
-	s = append(s, addSocket("tcp", linux.NetTcpFile())...)
-	s = append(s, addSocket("tcp6", linux.NetTcp6File())...)
-	s = append(s, addSocket("udp", linux.NetUdpFile())...)
-	s = append(s, addSocket("udp6", linux.NetUdp6File())...)
+	s = append(s, addSocket("tcp", proc.NetTcpFile())...)
+	s = append(s, addSocket("tcp6", proc.NetTcp6File())...)
+	s = append(s, addSocket("udp", proc.NetUdpFile())...)
+	s = append(s, addSocket("udp6", proc.NetUdp6File())...)
 	return
 }
 
@@ -90,9 +90,9 @@ func parseSocketEntry(proto, entry string) (sockets []*socketEntry, err error) {
 					continue
 				}
 				if strings.HasSuffix(proto, "6") {
-					se.localIP, _ = linux.ParseIPv6(ipPort[0])
+					se.localIP, _ = proc.ParseIPv6(ipPort[0])
 				} else {
-					se.localIP = linux.ParseIPV4One(ipPort[0])
+					se.localIP = proc.ParseIPV4One(ipPort[0])
 				}
 				port, err := strconv.ParseInt(ipPort[1], 16, 64)
 				if err != nil {
@@ -105,9 +105,9 @@ func parseSocketEntry(proto, entry string) (sockets []*socketEntry, err error) {
 					continue
 				}
 				if strings.HasSuffix(proto, "6") {
-					se.remoteIP, _ = linux.ParseIPv6(ipPort[0])
+					se.remoteIP, _ = proc.ParseIPv6(ipPort[0])
 				} else {
-					se.remoteIP = linux.ParseIPV4One(ipPort[0])
+					se.remoteIP = proc.ParseIPV4One(ipPort[0])
 				}
 				port, err := strconv.ParseInt(ipPort[1], 16, 64)
 				if err != nil {
@@ -116,7 +116,7 @@ func parseSocketEntry(proto, entry string) (sockets []*socketEntry, err error) {
 				se.remotePort = int(port)
 			case 3:
 				if se.proto == "tcp" || se.proto == "tcp6" {
-					se.state = linux.TcpConnectionStateTransform(lineList[i])
+					se.state = proc.TcpConnectionStateTransform(lineList[i])
 				}
 			case 4:
 				queueList := strings.Split(lineList[i], ":")

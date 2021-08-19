@@ -1,14 +1,12 @@
 package lib
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"os/user"
 	"strconv"
-	"strings"
 )
 
 // CopyFile 覆盖文件
@@ -60,18 +58,18 @@ func GetOneWalk(path string) (files []string, dirs []string, err error) {
 	return
 }
 
-func Read(path string) string {
-	fi, err := os.Open(path)
+func Read(name string) ([]byte, error) {
+	f, err := os.Open(name)
 	if err != nil {
-		return ""
+		return nil, err
 	}
-	defer fi.Close()
+	defer f.Close()
 
-	fd, err := ioutil.ReadAll(fi)
+	data, err := ioutil.ReadAll(f)
 	if err != nil {
-		return ""
+		return nil, err
 	}
-	return string(fd)
+	return data, nil
 }
 
 func GetUidGid(userName, groupName string) (uid, gid uint64, err error) {
@@ -98,29 +96,6 @@ func GetUidGid(userName, groupName string) (uid, gid uint64, err error) {
 		}
 	}
 	return uid, gid, err
-}
-
-func GetEtcPasswdUidGid(user string) (uid, gid int, err error) {
-	con := strings.TrimSpace(Read(HostEtc("passwd")))
-	conList := strings.Split(con, "\n")
-	if len(conList) == 0 {
-		return -1, -1, errors.New("user no exist")
-	}
-	for _, v := range conList {
-		if !strings.EqualFold(user, strings.Split(v, ":")[0]) {
-			continue
-		}
-		uid, err := strconv.Atoi(strings.Split(v, ":")[2])
-		if err != nil {
-			return -1, -1, err
-		}
-		gid, err := strconv.Atoi(strings.Split(v, ":")[3])
-		if err != nil {
-			return -1, -1, err
-		}
-		return uid, gid, nil
-	}
-	return -1, -1, errors.New("user no exist")
 }
 
 // http://www.filepermissions.com/file-permissions-index

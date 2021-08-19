@@ -216,12 +216,14 @@ func (f *FileOp) hard() error {
 	if !f.isOp(Src) {
 		return errors.New(" no src path")
 	}
+
 	name, err := f.getName()
 	if err != nil {
 		return err
 	}
+
 	if f.isChown() {
-		err := f.chown()
+		err = f.chown()
 		if err != nil {
 			return err
 		}
@@ -233,12 +235,14 @@ func (f *FileOp) link() error {
 	if !f.isOp(Src) {
 		return errors.New(" no file src")
 	}
+
 	name, err := f.getName()
 	if err != nil {
 		return err
 	}
+
 	if f.isChown() {
-		err := f.chown()
+		err = f.chown()
 		if err != nil {
 			return err
 		}
@@ -288,6 +292,7 @@ func (f *FileOp) directory() error {
 	if err != nil {
 		return err
 	}
+
 	err = os.MkdirAll(name, 0744)
 	if err != nil {
 		return err
@@ -300,6 +305,7 @@ func (f *FileOp) absent() error {
 	if err != nil {
 		return err
 	}
+
 	err = os.RemoveAll(name)
 	if err != nil {
 		return err
@@ -311,14 +317,17 @@ func (f *FileOp) mode() error {
 	if !f.isOp(Mode) {
 		return nil
 	}
+
 	path, err := f.getName()
 	if err != nil {
 		return err
 	}
+
 	s, err := lib.PathExists(path)
 	if !s {
 		return err
 	}
+
 	numList := "1234567890"
 	numStatus := checkStr(f.Mode, numList)
 	strList := "+-=ugorwx,"
@@ -326,6 +335,7 @@ func (f *FileOp) mode() error {
 	if !numStatus && !strStatus {
 		return errors.New("file mode content error")
 	}
+
 	if numStatus {
 		if len(f.Mode) < 4 && len(f.Mode) > 5 {
 			return errors.New("file mode content error")
@@ -340,8 +350,9 @@ func (f *FileOp) mode() error {
 		}
 		return nil
 	}
+
 	if strStatus {
-		err := f.getFileMode()
+		err = f.getFileMode()
 		if err != nil {
 			return err
 		}
@@ -356,11 +367,17 @@ func (f *FileOp) getFileMode() error {
 	if err != nil {
 		return err
 	}
+
 	fInfo, err := os.Stat(name)
 	if err != nil {
 		return err
 	}
+
 	fileModeStr := fmt.Sprintf("%v", fInfo.Mode()) // -rw-r--r--
+	if len(fileModeStr) != 0 {
+		return fmt.Errorf("文件权限获取异常,%s", fInfo.Mode())
+	}
+
 	u = fileModeStr[1:4]
 	g = fileModeStr[4:7]
 	o = fileModeStr[7:10]
@@ -368,6 +385,7 @@ func (f *FileOp) getFileMode() error {
 	if len(modeList) == 0 {
 		return errors.New("file mode content error")
 	}
+
 	for _, line := range modeList {
 		role, modeStr, err := getFileMode(line, fileModeStr)
 		if err != nil {
@@ -382,6 +400,7 @@ func (f *FileOp) getFileMode() error {
 			o = modeStr
 		}
 	}
+
 	uNum := lib.GetChmodPermissions(u)
 	gNum := lib.GetChmodPermissions(g)
 	oNum := lib.GetChmodPermissions(o)
@@ -389,6 +408,7 @@ func (f *FileOp) getFileMode() error {
 	if err != nil {
 		return err
 	}
+
 	err = os.Chmod(f.Path, os.FileMode(fMode))
 	if err != nil {
 		return err

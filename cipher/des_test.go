@@ -34,7 +34,7 @@ func TestTripleDesDecrypt(t *testing.T) {
 
 func TestTripleDesEncrypt(t *testing.T) {
 	key := []byte("sfe023f_sefiel#fi32lf3e!")
-	res, err := TripleDesEncrypt([]byte("7GDWY4SUE05LUQXV7R44"), key)
+	res, err := TripleDesEncrypt([]byte("101351744"), key)
 	if err != nil {
 		t.Fatalf("test TripleDesEncrypt failed. %s", err)
 	}

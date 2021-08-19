@@ -1,4 +1,4 @@
-package linux
+package proc
 
 import (
 	"encoding/binary"
@@ -36,7 +36,7 @@ func ParseIPV4One(hexIP string) string {
 	return fmt.Sprintf("%d.%d.%d.%d", ip1, ip2, ip3, ip4)
 }
 
-// ParseIPv6W
+// ParseIPv6
 func ParseIPv6(s string) (string, error) {
 	ip := make(net.IP, net.IPv6len)
 	const grpLen = 4

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 // YamlToJsonEncode 反射方式，将yaml数据转成json数据格式
@@ -62,4 +63,40 @@ func If(condition bool, trueVal, falseVal interface{}) interface{} {
 		return trueVal
 	}
 	return falseVal
+}
+
+// SplitNullString 根据空行切分字符串
+func SplitNullString(s string) (slice []string) {
+	var buffer bytes.Buffer
+	lines := strings.Split(s, "\n")
+	for _, v := range lines {
+		if len(v) == 0 {
+			if len(buffer.String()) > 0 {
+				slice = append(slice, buffer.String())
+				buffer.Reset()
+			}
+		} else {
+			buffer.WriteString(v)
+			buffer.WriteString("\n")
+		}
+	}
+	return
+}
+
+// RemoveSuffix 判断dest是否存在suffix结尾，删除
+func RemoveSuffix(dest, suffix string) string {
+	result := strings.HasSuffix(dest, suffix)
+	if result {
+		dest = strings.TrimSuffix(dest, suffix)
+	}
+	return dest
+}
+
+// RemovePrefix 判断dest开头是否存在prefix，存在删除prefix
+func RemovePrefix(dest, prefix string) string {
+	result := strings.HasPrefix(dest, prefix)
+	if result {
+		dest = strings.TrimPrefix(dest, prefix)
+	}
+	return dest
 }
