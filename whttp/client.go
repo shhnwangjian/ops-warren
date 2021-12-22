@@ -2,6 +2,7 @@ package whttp
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"net"
 	"net/http"
@@ -18,14 +19,15 @@ const (
 	netTimeout          = 30
 )
 
-func common(method, path, body string, header http.Header, timeout uint64, params map[string]string) (response *http.Response, err error) {
+func common(ctx context.Context, method, path, body string, header http.Header, timeout uint64,
+	params map[string]string) (response *http.Response, err error) {
 	client := getClientConfig(timeout)
 	req, err := http.NewRequest(method, buildUrl(path, params), strings.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
 	req.Header = header
-	resp, err := client.Do(req)
+	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
